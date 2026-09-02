@@ -1,0 +1,54 @@
+# Java and Maven
+target/
+*.class
+*.jar
+*.war
+hs_err_pid*
+
+# Maven wrapper generated files
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Node.js and React/Vite
+node_modules/
+dist/
+.vite/
+coverage/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE and editor files
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Backup and temporary files
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+.tmp/
+Frontend-Backup/
+Backend/**/target/
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Accidental files
+rcmainresourcesapplication.properties
+tatus

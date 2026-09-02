@@ -1,0 +1,1341 @@
+{
+  "info": {
+    "_postman_id": "c1f7b8a0-721a-4f56-8a9d-123456789abc",
+    "name": "StageFront — Complete API Testing",
+    "description": "Enterprise microservices Postman API Test Collection for StageFront event booking and management application.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Authentication",
+      "description": "User and Admin authentication, password recovery, and credential endpoints.",
+      "item": [
+        {
+          "name": "User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response contains valid user credentials', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.email).to.eql('rahul@gmail.com');",
+                  "    pm.expect(jsonData.role).to.eql('USER');",
+                  "    if (jsonData.token) {",
+                  "        pm.environment.set('jwtToken', jsonData.token);",
+                  "    }",
+                  "    if (jsonData.id) {",
+                  "        pm.environment.set('userId', jsonData.id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"UserPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response contains ADMIN role', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.role).to.eql('ADMIN');",
+                  "    if (jsonData.token) {",
+                  "        pm.environment.set('adminJwtToken', jsonData.token);",
+                  "    }",
+                  "    if (jsonData.id) {",
+                  "        pm.environment.set('adminUserId', jsonData.id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"AdminPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns 6-digit reset code', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.resetCode).to.exist;",
+                  "    pm.environment.set('resetCode', jsonData.resetCode);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "forgot-password"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rahul@gmail.com\",\n  \"resetCode\": \"{{resetCode}}\",\n  \"newPassword\": \"Rahul12345\",\n  \"confirmPassword\": \"Rahul12345\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "reset-password"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rahul@gmail.com\",\n  \"currentPassword\": \"Rahul12345\",\n  \"newPassword\": \"Rahul12345\",\n  \"confirmPassword\": \"Rahul12345\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "change-password"]
+            }
+          }
+        },
+        {
+          "name": "Negative — Invalid Password Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Rejects invalid password with 401/400', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rahul@gmail.com\",\n  \"password\": \"WrongPassword99\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - User Service",
+      "description": "User profile management and user directory endpoints.",
+      "item": [
+        {
+          "name": "Create / Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 Created or 409 Conflict', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([201, 409]);",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    pm.environment.set('userId', jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test User\",\n  \"email\": \"postman.user@stagefront.in\",\n  \"password\": \"User@12345\",\n  \"phone\": \"+919876543210\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response contains valid user details', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    pm.expect(jsonData.email).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get User By Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns requested email record', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.email).to.eql('rahul@gmail.com');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/email/rahul@gmail.com",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "email", "rahul@gmail.com"]
+            }
+          }
+        },
+        {
+          "name": "List All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response is an array of users', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Profile updated successfully', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.eql('Rahul Sharma Updated');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Sharma Updated\",\n  \"phone\": \"+919988776655\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Event Service",
+      "description": "Live event catalogue, schedules, seat counts, and pricing endpoints.",
+      "item": [
+        {
+          "name": "Get All Events",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns list of events', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    if (jsonData.length > 0) {",
+                  "        pm.environment.set('eventId', jsonData[0].id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events"]
+            }
+          }
+        },
+        {
+          "name": "Get Event By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns valid event details', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    pm.expect(jsonData.name).to.exist;",
+                  "    pm.expect(jsonData.totalSeats).to.exist;",
+                  "    pm.expect(jsonData.availableSeats).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events", "{{eventId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Event (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Created event has valid ID and fields', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    pm.expect(jsonData.name).to.eql('Postman Test Concert');",
+                  "    pm.environment.set('eventId', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Concert\",\n  \"description\": \"Postman API testing event\",\n  \"venue\": \"StageFront Arena, Mumbai\",\n  \"eventDate\": \"2026-10-15\",\n  \"eventTime\": \"19:00:00\",\n  \"category\": \"Music\",\n  \"totalSeats\": 100,\n  \"availableSeats\": 100,\n  \"price\": 999.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events"]
+            }
+          }
+        },
+        {
+          "name": "Update Event (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Event updated successfully', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.eql('Postman Test Concert (Updated)');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Concert (Updated)\",\n  \"description\": \"Updated live stage experience\",\n  \"venue\": \"National Arena, Delhi\",\n  \"eventDate\": \"2026-10-15\",\n  \"eventTime\": \"20:00:00\",\n  \"category\": \"Music\",\n  \"totalSeats\": 100,\n  \"availableSeats\": 100,\n  \"price\": 1200.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events", "{{eventId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Event (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 204 No Content or 200 OK', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events", "{{eventId}}"]
+            }
+          }
+        },
+        {
+          "name": "Negative — Get Nonexistent Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events", "999999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Booking Service",
+      "description": "Ticket reservations, booking queries, and cancellation endpoints.",
+      "item": [
+        {
+          "name": "Create Booking (Instant CONFIRMED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Booking created with CONFIRMED status', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    pm.expect(jsonData.bookingReference).to.exist;",
+                  "    pm.expect(jsonData.status).to.eql('CONFIRMED');",
+                  "    pm.environment.set('bookingId', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"eventId\": {{eventId}},\n  \"numberOfSeats\": 2,\n  \"price\": 999.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings"]
+            }
+          }
+        },
+        {
+          "name": "Get Booking By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response matches requested booking ID', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{bookingId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Bookings By User ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns list of user bookings', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/user/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "user", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Bookings By Event ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns list of event bookings', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/event/{{eventId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "event", "{{eventId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get All Bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns master list of bookings', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Booking status is CANCELLED', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('CANCELLED');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{bookingId}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Negative — Get Nonexistent Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "999999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Seat Management",
+      "description": "Temporary seat hold, seat reservation confirmation, and automatic background expiration endpoints.",
+      "item": [
+        {
+          "name": "Create Temporary Seat Hold",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Seat hold status is PENDING', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('PENDING');",
+                  "    pm.environment.set('holdId', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"eventId\": {{eventId}},\n  \"numberOfSeats\": 3,\n  \"price\": 999.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/hold?expirationSeconds=60",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "hold"],
+              "query": [
+                {
+                  "key": "expirationSeconds",
+                  "value": "60"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Confirm Seat Hold",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Seat hold confirmed successfully', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('CONFIRMED');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{holdId}}/confirm",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{holdId}}", "confirm"]
+            }
+          }
+        },
+        {
+          "name": "Create Short 3-Sec Hold for Automatic Expiration Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Short seat hold created (expires in 3 sec)', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('PENDING');",
+                  "    pm.environment.set('shortHoldId', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"eventId\": {{eventId}},\n  \"numberOfSeats\": 2,\n  \"price\": 999.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/hold?expirationSeconds=3",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "hold"],
+              "query": [
+                {
+                  "key": "expirationSeconds",
+                  "value": "3"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verify Expired Hold Status (Run after 5 sec delay)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Hold automatically expired by background scheduler', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('EXPIRED');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{shortHoldId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{shortHoldId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Notifications",
+      "description": "User and Admin real-time notification channels.",
+      "item": [
+        {
+          "name": "Create Notification",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Notification created successfully', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    pm.environment.set('notificationId', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientUserId\": {{userId}},\n  \"recipientRole\": \"USER\",\n  \"title\": \"Postman Notification\",\n  \"message\": \"System verification testing message.\",\n  \"type\": \"SYSTEM_ALERT\",\n  \"relatedId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications"]
+            }
+          }
+        },
+        {
+          "name": "Get User Notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns list of user notifications', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/user/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "user", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Admin Notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns list of admin notifications', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "admin"]
+            }
+          }
+        },
+        {
+          "name": "Mark Notification As Read",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('isRead is set to true', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.isRead).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/{{notificationId}}/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "{{notificationId}}", "read"]
+            }
+          }
+        },
+        {
+          "name": "Mark All User Notifications Read",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/user/{{userId}}/read-all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "user", "{{userId}}", "read-all"]
+            }
+          }
+        },
+        {
+          "name": "Mark All Admin Notifications Read",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/admin/read-all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "admin", "read-all"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Admin Operations",
+      "description": "Administrator metrics, user audit directory, and event analytics endpoints.",
+      "item": [
+        {
+          "name": "Admin Dashboard — Events Overview",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events"]
+            }
+          }
+        },
+        {
+          "name": "Admin Dashboard — Sales Revenue Bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings"]
+            }
+          }
+        },
+        {
+          "name": "Admin Master User Directory",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Admin Event Bookings Inspection",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/event/{{eventId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "event", "{{eventId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Gateway / Health Checks",
+      "description": "API Gateway routing and Eureka discovery registry status.",
+      "item": [
+        {
+          "name": "API Gateway Actuator Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Gateway is online (200 or 404)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Eureka Service Discovery Registered Apps",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Eureka returns registered microservices', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.applications).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8761/eureka/apps",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8761",
+              "path": ["eureka", "apps"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

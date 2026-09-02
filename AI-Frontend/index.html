@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventify India - Live Events, Movies & Ticket Booking</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Dynamic Mouse Move Picture Tooltip -->
+    <div id="mouse-image-preview">
+        <img id="mouse-preview-img" src="" alt="Preview">
+        <div id="mouse-preview-label" class="preview-badge">Live Event</div>
+    </div>
+
+    <!-- Custom Trailing Neon Cursor -->
+    <div id="custom-cursor"></div>
+    <div id="custom-cursor-dot"></div>
+
+    <!-- Background Canvas Particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Infinite Marquee Ticker -->
+    <div class="ticker-wrap">
+        <div class="ticker-move">
+            <div class="ticker-item"><i class="fa-solid fa-fire text-amber-400"></i> SUNBURN GOA FESTIVAL 2026</div>
+            <div class="ticker-item"><i class="fa-solid fa-bolt text-pink-400"></i> INDIA AI & TECH SUMMIT BENGALURU</div>
+            <div class="ticker-item"><i class="fa-solid fa-shield-halved text-cyan-400"></i> REAL-TIME SEAT LOCKING & MICROSERVICE SYNC</div>
+            <div class="ticker-item"><i class="fa-solid fa-crown text-amber-400"></i> VIP GOLD PASSES AVAILABLE IN RUPEES (₹)</div>
+            <div class="ticker-item"><i class="fa-solid fa-fire text-amber-400"></i> SUNBURN GOA FESTIVAL 2026</div>
+        </div>
+    </div>
+
+    <!-- ==================== 1. GLASS TRANSLUCENT NAVBAR LAYERED OVER VIDEO ==================== -->
+    <nav class="navbar" id="top-navbar">
+        <div class="logo-container" onclick="switchTab('home')">
+            <div class="logo-icon"><i class="fa-solid fa-ticket-simple"></i></div>
+            <div class="logo-text">EVENTIFY<span class="gradient-text">.in</span></div>
+        </div>
+
+        <!-- BookMyShow Style City Selector Button -->
+        <button class="city-selector-btn" onclick="openModal('cityModal')" title="Select Your City">
+            <i class="fa-solid fa-location-dot text-pink-500"></i>
+            <span id="current-city-label">Hyderabad</span>
+            <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+        </button>
+
+        <!-- Navigation Links (Dynamic per User vs Admin Mode) -->
+        <div class="nav-menu" id="nav-menu">
+            <a class="nav-link active" id="nav-home" onclick="switchTab('home')">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
+            <a class="nav-link" id="nav-events" onclick="switchTab('events')">
+                <i class="fa-solid fa-compass"></i> Events
+            </a>
+
+            <!-- USER MODE SPECIFIC LINKS -->
+            <a class="nav-link" id="nav-wishlist" onclick="switchTab('wishlist')">
+                <i class="fa-solid fa-heart text-pink-500"></i> Wishlist
+                <span class="badge-count" id="user-wishlist-count">1</span>
+            </a>
+            <a class="nav-link" id="nav-bookings" onclick="switchTab('bookings')">
+                <i class="fa-solid fa-bookmark"></i> My Bookings
+                <span class="badge-count" id="user-booking-count">0</span>
+            </a>
+
+            <!-- DEDICATED ADMIN MODE SEPARATE PAGES LINKS -->
+            <a class="nav-link" id="nav-admin-events" onclick="switchTab('admin-events')" style="display: none;">
+                <i class="fa-solid fa-sliders text-pink-500"></i> Event Management
+            </a>
+            <a class="nav-link" id="nav-admin-users" onclick="switchTab('admin-users')" style="display: none;">
+                <i class="fa-solid fa-users text-cyan-400"></i> User Booking Details
+            </a>
+
+            <button class="btn btn-primary btn-sm" id="nav-admin-create-btn" onclick="openCreateEventModal()" style="display: none;">
+                <i class="fa-solid fa-plus"></i> + Create Event
+            </button>
+
+            <a class="nav-link" onclick="openModal('notifModal'); markNotificationsRead();">
+                <i class="fa-solid fa-bell"></i> Notifications
+                <span class="badge-count" id="user-notif-count" style="background: var(--accent-red); display: none;">2</span>
+            </a>
+        </div>
+
+        <!-- Auth Aware & Role Switcher Right Group -->
+        <div class="nav-auth-group">
+
+            <!-- MODE SWITCHER PILL (USER MODE vs ADMIN MODE) -->
+            <div class="role-switcher-pill" title="Switch Portal Mode">
+                <button class="role-btn active" id="role-user-btn" onclick="setRoleMode('USER')">
+                    <i class="fa-solid fa-user"></i> User Mode
+                </button>
+                <button class="role-btn" id="role-admin-btn" onclick="setRoleMode('ADMIN')">
+                    <i class="fa-solid fa-user-shield"></i> Admin Mode
+                </button>
+            </div>
+
+            <!-- Logged Out Buttons -->
+            <div id="auth-logged-out-group" style="display: flex; gap: 0.6rem;">
+                <button class="btn btn-secondary btn-sm" onclick="openAuthModal('login')">
+                    <i class="fa-solid fa-right-to-bracket"></i> Login
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="openAuthModal('register')">
+                    <i class="fa-solid fa-user-plus"></i> Register
+                </button>
+            </div>
+
+            <!-- Logged In Buttons -->
+            <div id="auth-logged-in-group" style="display: none; align-items: center; gap: 0.65rem;">
+                <button class="btn btn-secondary btn-sm" onclick="openProfileModal()" title="View Profile & Settings" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <img id="nav-user-avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid var(--primary);">
+                    <span id="nav-user-name">Rahul Sharma</span>
+                </button>
+                <button class="btn btn-danger btn-sm" id="nav-admin-logout-btn" onclick="handleAdminLogout()" title="Logout Admin" style="display: none;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Admin Logout
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="openGatewayModal()" title="Gateway Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="handleLogout()" title="Logout User">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Hamburger Toggle -->
+            <button class="hamburger-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main>
+
+        <!-- ==================== 🎥 2. CLEAN HOMEPAGE ==================== -->
+        <section id="section-home">
+            <div class="hero-viewport-100vh">
+                <!-- Real Continuously Moving Event Video Fill -->
+                <video id="hero-main-video" class="hero-full-video" autoplay loop muted playsinline preload="auto"
+                       poster="public/images/event-hero-poster.jpg">
+                    <source src="public/videos/event-hero.mp4" type="video/mp4">
+                    <source src="https://assets.mixkit.co/videos/preview/mixkit-crowd-at-a-concert-with-lights-41564-large.mp4" type="video/mp4">
+                </video>
+
+                <!-- Subtle Dark Cinematic Overlay for Text Readability -->
+                <div class="hero-video-cinematic-overlay"></div>
+
+                <!-- Layered Hero Text Content Overlay -->
+                <div class="hero-layered-content">
+                    <div class="hero-small-label">
+                        <i class="fa-solid fa-bolt"></i> LIVE THE MOMENT • INDIA
+                    </div>
+                    <h1 class="hero-main-heading">
+                        Your Next <br>
+                        <span class="gradient-text">Unforgettable Experience.</span>
+                    </h1>
+                    <p class="hero-supporting-text">
+                        Discover concerts, festivals, sports championships, comedy shows, and theater performances across India with real-time seat selection in Rupees (₹).
+                    </p>
+
+                    <!-- Working Navigation Buttons -->
+                    <div class="hero-button-group">
+                        <button class="btn btn-primary" onclick="switchTab('events')">
+                            <i class="fa-solid fa-compass"></i> EXPLORE EVENTS
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchTab('bookings')">
+                            <i class="fa-solid fa-bookmark"></i> MY BOOKINGS
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Floating Live HUD & Controls at Bottom Right -->
+                <div class="hero-live-badge-group">
+                    <div class="live-pulse-pill">
+                        <div class="pulse-dot"></div>
+                        <span>● LIVE EXPERIENCES IN INDIA</span>
+                    </div>
+
+                    <div class="hero-video-controls">
+                        <button class="v-btn" onclick="toggleHeroVideoPlay()" title="Play / Pause Video">
+                            <i class="fa-solid fa-pause" id="video-play-icon"></i>
+                        </button>
+                        <button class="v-btn" onclick="toggleHeroVideoMute()" title="Mute / Unmute Audio">
+                            <i class="fa-solid fa-volume-xmark" id="video-mute-icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLEAN TRENDING EVENTS SECTION BELOW HERO -->
+            <div class="container" style="margin-top: 4rem; margin-bottom: 5rem;" id="trending-section">
+                <div class="section-title-wrap">
+                    <span class="section-subtitle">POPULAR & FEATURED IN INDIA</span>
+                    <h2 class="section-headline">Trending <span class="gradient-text">Events</span></h2>
+                </div>
+
+                <div class="events-grid" id="home-trending-grid"></div>
+            </div>
+        </section>
+
+        <!-- ==================== 3. DEDICATED EVENTS PAGE ==================== -->
+        <section id="section-events" class="container" style="display: none; padding-top: 8rem;">
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem;">Explore <span class="gradient-text">Available Events</span></h2>
+                <p style="color: #94a3b8;">Search and filter upcoming live experiences in India with real-time seat selection in Rupees (₹).</p>
+            </div>
+
+            <!-- Search & Filter Bar -->
+            <div class="filter-bar" id="events-search-bar">
+                <div class="search-input-group">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" class="search-control" placeholder="Search event name, city (Mumbai, Goa, Delhi...)..." oninput="filterEvents()">
+                </div>
+
+                <div class="category-pills" id="category-filter-list">
+                    <button class="pill-btn active" onclick="setCategory('All', this)" onmouseenter="showMouseImage('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600', 'All Events')" onmouseleave="hideMouseImage()">All Events</button>
+                    <button class="pill-btn" onclick="setCategory('Music', this)" onmouseenter="showMouseImage('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600', 'Live Music')" onmouseleave="hideMouseImage()"><i class="fa-solid fa-music"></i> Music</button>
+                    <button class="pill-btn" onclick="setCategory('Tech', this)" onmouseenter="showMouseImage('https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600', 'AI Tech Summit')" onmouseleave="hideMouseImage()"><i class="fa-solid fa-laptop-code"></i> Tech</button>
+                    <button class="pill-btn" onclick="setCategory('Sports', this)" onmouseenter="showMouseImage('https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600', 'Esports')" onmouseleave="hideMouseImage()"><i class="fa-solid fa-trophy"></i> Sports</button>
+                    <button class="pill-btn" onclick="setCategory('Arts', this)" onmouseenter="showMouseImage('https://images.unsplash.com/photo-1508997449629-303059a039c0?w=600', 'Digital Arts')" onmouseleave="hideMouseImage()"><i class="fa-solid fa-palette"></i> Arts & Theater</button>
+                </div>
+            </div>
+
+            <div class="events-section-header" style="margin-bottom: 1.5rem;">
+                <span style="color: #94a3b8; font-size: 0.95rem;" id="events-count-label">Loading events...</span>
+            </div>
+
+            <!-- Events Grid -->
+            <div class="events-grid" id="events-grid-container"></div>
+        </section>
+
+        <!-- ==================== 4. WISHLIST SECTION ==================== -->
+        <section id="section-wishlist" class="container" style="display: none; padding-top: 8rem;">
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 2.2rem;">My Saved <span class="gradient-text">Wishlist</span> ❤️</h2>
+                <p style="color: #94a3b8;">Keep track of upcoming concerts and festivals so you never miss out on tickets.</p>
+            </div>
+            <div class="events-grid" id="wishlist-grid-container"></div>
+        </section>
+
+        <!-- ==================== 5. MY BOOKINGS SECTION ==================== -->
+        <section id="section-bookings" class="container" style="display: none; padding-top: 8rem;">
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 2.2rem;">My Event <span class="gradient-text">Bookings</span></h2>
+                <p style="color: #94a3b8;">Manage your active reservations, view digital ticket passes, or trigger instant seat release cancellations.</p>
+            </div>
+            <div class="bookings-list" id="bookings-list-container"></div>
+        </section>
+
+        <!-- ==================== 6. SEPARATE PAGE 1: EVENT MANAGEMENT ==================== -->
+        <section id="section-admin-events" class="container" style="display: none; padding-top: 8rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 2.2rem;">Event <span class="gradient-text">Management</span></h2>
+                    <p style="color: #94a3b8;">Create, update, or remove events and monitor real-time seat inventory in Rupees (₹).</p>
+                </div>
+                <div style="display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;">
+                    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-green); padding: 0.6rem 1.4rem; border-radius: var(--radius-md);">
+                        <span style="font-size: 0.75rem; color: #94a3b8; display: block;">TOTAL REVENUE</span>
+                        <strong id="admin-total-revenue" style="font-size: 1.4rem; color: var(--accent-green);">₹10,997</strong>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="openCreateEventModal()">
+                        <i class="fa-solid fa-plus"></i> + Create New Event
+                    </button>
+                </div>
+            </div>
+
+            <!-- EVENT MANAGEMENT TABLE -->
+            <div class="peaceful-card" style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;" id="admin-events-table">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-glass); color: #94a3b8; font-size: 0.85rem; text-transform: uppercase;">
+                            <th style="padding: 1rem;">Event ID</th>
+                            <th style="padding: 1rem;">Title</th>
+                            <th style="padding: 1rem;">Location</th>
+                            <th style="padding: 1rem;">Date</th>
+                            <th style="padding: 1rem;">Total Seats</th>
+                            <th style="padding: 1rem;">Price (₹)</th>
+                            <th style="padding: 1rem; text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-events-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== 7. SEPARATE PAGE 2: USER BOOKING DETAILS & ANALYTICS ==================== -->
+        <section id="section-admin-users" class="container" style="display: none; padding-top: 8rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 2.2rem;">Users Data Analytics & <span class="gradient-text">Booking Breakdown</span></h2>
+                    <p style="color: #94a3b8;">Click any user row or booking log to inspect full user profile, contact info, and ticket order history!</p>
+                </div>
+                <div style="background: rgba(6, 182, 212, 0.15); border: 1px solid var(--accent-cyan); padding: 0.6rem 1.4rem; border-radius: var(--radius-md);">
+                    <span style="font-size: 0.75rem; color: #94a3b8; display: block;">REGISTERED USERS</span>
+                    <strong id="admin-total-users-count" style="font-size: 1.4rem; color: var(--accent-cyan);">3</strong>
+                </div>
+            </div>
+
+            <!-- USER BOOKING HISTORY LOGS TABLE (TOP) -->
+            <div style="margin-bottom: 3rem;">
+                <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 1rem; color: var(--accent-cyan);">
+                    <i class="fa-solid fa-receipt mr-2"></i> User Booking History & Audit Logs <small style="font-size: 0.8rem; color: #94a3b8; font-weight: 400;">(Click row to inspect user profile)</small>
+                </h3>
+                <div class="peaceful-card" style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-glass); color: #94a3b8; font-size: 0.85rem; text-transform: uppercase;">
+                                <th style="padding: 1rem;">Booking ID</th>
+                                <th style="padding: 1rem;">User / Email</th>
+                                <th style="padding: 1rem;">Event Name</th>
+                                <th style="padding: 1rem;">Seats</th>
+                                <th style="padding: 1rem;">Amount</th>
+                                <th style="padding: 1rem;">Payment Method</th>
+                                <th style="padding: 1rem;">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-bookings-log-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- USER DETAILS DIRECTORY TABLE -->
+            <div>
+                <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 1rem; color: var(--primary);">
+                    <i class="fa-solid fa-users mr-2"></i> Registered Users Directory
+                </h3>
+                <div class="peaceful-card" style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-glass); color: #94a3b8; font-size: 0.85rem; text-transform: uppercase;">
+                                <th style="padding: 1rem;">User ID</th>
+                                <th style="padding: 1rem;">Name</th>
+                                <th style="padding: 1rem;">Email / Phone</th>
+                                <th style="padding: 1rem;">City</th>
+                                <th style="padding: 1rem;">Status</th>
+                                <th style="padding: 1rem; text-align: center;">Bookings</th>
+                                <th style="padding: 1rem;">Event Bookings Detail</th>
+                                <th style="padding: 1rem;">Total Spent</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-info-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==================== 👤 DEEP USER PROFILE INSPECTOR MODAL ==================== -->
+    <div class="modal-overlay" id="userDetailModal">
+        <div class="modal-content" style="max-width: 680px;">
+            <div class="modal-header">
+                <div>
+                    <h3>User Profile Inspector</h3>
+                    <p style="color: #94a3b8; font-size: 0.85rem;">Complete User Account & Ticket Order History</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('userDetailModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.8rem; flex-wrap: wrap;">
+                    <img id="u-detail-avatar" src="" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); box-shadow: var(--shadow-pink);">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <h3 style="font-size: 1.6rem; font-weight: 900;" id="u-detail-name">Rahul Sharma</h3>
+                            <span id="u-detail-status" style="background: rgba(245, 158, 11, 0.2); color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 0.2rem 0.8rem; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 800;">VIP Gold</span>
+                        </div>
+                        <div style="color: var(--accent-cyan); font-weight: 800; font-size: 0.9rem;" id="u-detail-id">USR-9042</div>
+                        <div style="color: #94a3b8; font-size: 0.85rem; margin-top: 0.2rem;">
+                            <i class="fa-solid fa-envelope mr-1"></i> <span id="u-detail-email">rahul@example.com</span> • 
+                            <i class="fa-solid fa-phone mr-1"></i> <span id="u-detail-phone">+91 98765 43210</span> • 
+                            <i class="fa-solid fa-city mr-1"></i> <span id="u-detail-city">Mumbai</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.78rem; color: #94a3b8; text-transform: uppercase; font-weight: 800;">PERSONAL BIO</div>
+                    <div id="u-detail-bio" style="font-size: 0.9rem; color: #cbd5e1; margin-top: 0.3rem;">Music enthusiast & software engineer.</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.8rem;">
+                    <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid var(--accent-green); padding: 1rem; border-radius: var(--radius-md);">
+                        <span style="font-size: 0.78rem; color: #94a3b8; display: block;">TOTAL SPENT (INR)</span>
+                        <div id="u-detail-total-spent" style="font-size: 1.6rem; font-weight: 900; color: var(--accent-green);">₹5,998</div>
+                    </div>
+                    <div style="background: rgba(236, 72, 153, 0.12); border: 1px solid var(--border-glow); padding: 1rem; border-radius: var(--radius-md);">
+                        <span style="font-size: 0.78rem; color: #94a3b8; display: block;">BOOKINGS COMPLETED</span>
+                        <div id="u-detail-count" style="font-size: 1.6rem; font-weight: 900; color: var(--primary);">1 booking(s)</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem; color: var(--accent-cyan);">
+                        <i class="fa-solid fa-ticket mr-2"></i> Chronological Booking History
+                    </h4>
+                    <div id="u-detail-bookings-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 🎪 DEEP EVENT ANALYTICS INSPECTOR MODAL ==================== -->
+    <div class="modal-overlay" id="eventDetailModal">
+        <div class="modal-content" style="max-width: 720px;">
+            <div class="modal-header">
+                <div>
+                    <h3>Event Analytics & Attendee Inspector</h3>
+                    <p style="color: #94a3b8; font-size: 0.85rem;">Live Performance Metrics, Seats Occupancy & Ticket Buyers</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('eventDetailModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="position: relative; height: 180px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 1.6rem;">
+                    <img id="e-detail-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(2,2,6,0.95) 100%);"></div>
+                    <div style="position: absolute; bottom: 1rem; left: 1.5rem;">
+                        <span id="e-detail-category" style="background: rgba(0,0,0,0.8); color: var(--accent-cyan); font-size: 0.75rem; font-weight: 800; padding: 0.2rem 0.8rem; border-radius: 999px; text-transform: uppercase;">Music</span>
+                        <h3 id="e-detail-title" style="font-size: 1.6rem; font-weight: 900; color: white; margin-top: 0.2rem;">Sunburn Goa Festival</h3>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.6rem; text-align: center;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+                        <span style="font-size: 0.72rem; color: #94a3b8; display: block;">EVENT ID</span>
+                        <strong id="e-detail-id" style="color: var(--accent-cyan); font-size: 0.95rem;">EVT-101</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+                        <span style="font-size: 0.72rem; color: #94a3b8; display: block;">TICKET PRICE</span>
+                        <strong id="e-detail-price" style="color: var(--primary); font-size: 0.95rem;">₹2,999</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+                        <span style="font-size: 0.72rem; color: #94a3b8; display: block;">SEATS LEFT</span>
+                        <strong id="e-detail-seats" style="color: white; font-size: 0.95rem;">42 / 150</strong>
+                    </div>
+                    <div style="background: rgba(16, 185, 129, 0.15); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--accent-green);">
+                        <span style="font-size: 0.72rem; color: #94a3b8; display: block;">REVENUE</span>
+                        <strong id="e-detail-revenue" style="color: var(--accent-green); font-size: 0.95rem;">₹5,998</strong>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.6rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 800; margin-bottom: 0.5rem;">
+                        <span>SEAT OCCUPANCY METRIC</span>
+                        <span id="e-detail-occupancy" style="color: var(--primary);">72% Occupied</span>
+                    </div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 0.5rem;">
+                        <i class="fa-solid fa-location-dot text-pink-500"></i> Venue: <span id="e-detail-location" style="color: white;">Vagator Beach Arena, Goa</span> • 
+                        <i class="fa-regular fa-calendar-days text-cyan-400 ml-2"></i> Date: <span id="e-detail-date" style="color: white;">2026-12-28</span>
+                    </div>
+                    <p id="e-detail-desc" style="font-size: 0.88rem; color: #cbd5e1; margin-top: 0.5rem;"></p>
+                </div>
+
+                <div>
+                    <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem; color: var(--primary);">
+                        <i class="fa-solid fa-users mr-2"></i> Confirmed Ticket Buyers & Attendees
+                    </h4>
+                    <div id="e-detail-attendees-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔐 ADMIN LOGIN CREDENTIALS MODAL -->
+    <div class="modal-overlay" id="adminLoginModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <div>
+                    <h3>Administrator Sign In</h3>
+                    <p style="color: #94a3b8; font-size: 0.85rem;">Secured Access to Event & User Analytics</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('adminLoginModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="handleAdminLoginSubmit(event)">
+                    <div class="form-group">
+                        <label class="form-label">Admin Username</label>
+                        <input type="text" id="admin-username-input" class="form-control" placeholder="Enter admin username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Admin Password</label>
+                        <input type="password" id="admin-password-input" class="form-control" placeholder="Enter admin password" required>
+                    </div>
+
+                    <div style="background: rgba(236, 72, 153, 0.12); border: 1px solid var(--border-glow); border-radius: var(--radius-sm); padding: 0.8rem; margin-bottom: 1.2rem; font-size: 0.82rem; color: #cbd5e1;">
+                        <i class="fa-solid fa-key text-pink-500 mr-1"></i> Enter your admin credentials or contact the system administrator
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fa-solid fa-user-shield"></i> Sign In to Admin Mode
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🏙️ BOOKMYSHOW CITY SELECTOR MODAL -->
+    <div class="modal-overlay" id="cityModal">
+        <div class="modal-content" style="max-width: 680px;">
+            <div class="modal-header">
+                <div>
+                    <h3>Select Your City</h3>
+                    <p style="color: #94a3b8; font-size: 0.85rem;">Discover live events happening in your city</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('cityModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="position: relative;">
+                    <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1rem; top: 1rem; color: var(--primary);"></i>
+                    <input type="text" class="form-control" style="padding-left: 2.8rem;" placeholder="Search for your city (Mumbai, Delhi, Bengaluru...)" oninput="filterCities(this.value)">
+                </div>
+
+                <button class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 1.5rem; justify-content: center;" onclick="detectUserLocation()">
+                    <i class="fa-solid fa-crosshairs text-pink-500"></i> Detect My GPS Location
+                </button>
+
+                <div style="font-size: 0.82rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">
+                    Popular Cities
+                </div>
+
+                <div class="city-grid" id="popular-cities-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEAT MAP & BOOKING MODAL -->
+    <div class="modal-overlay" id="seatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modal-event-title">Select Seats & Book Tickets</h3>
+                    <p style="color: #94a3b8; font-size: 0.88rem;" id="modal-event-subtitle">Interactive Real-time Seat Allocation</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('seatModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="stage-container">
+                    <div class="stage-screen"></div>
+                    <div class="stage-label">MAIN STAGE & PERFORMER ZONE</div>
+                </div>
+
+                <div class="seat-legend" style="display: flex; justify-content: center; gap: 1.8rem; margin-bottom: 2rem;">
+                    <div class="legend-item" style="display: flex; align-items: center; gap: 0.5rem; color: #94a3b8;"><div class="seat-sample available" style="width: 20px; height: 20px; border-radius: 4px; background: rgba(255,255,255,0.15);"></div> Standard Seat</div>
+                    <div class="legend-item" style="display: flex; align-items: center; gap: 0.5rem; color: #94a3b8;"><div class="seat-sample vip" style="width: 20px; height: 20px; border-radius: 4px; border: 1px solid var(--accent-gold); color: var(--accent-gold);"></div> VIP Gold Row</div>
+                    <div class="legend-item" style="display: flex; align-items: center; gap: 0.5rem; color: #94a3b8;"><div class="seat-sample selected" style="width: 20px; height: 20px; border-radius: 4px; background: var(--primary);"></div> Selected</div>
+                    <div class="legend-item" style="display: flex; align-items: center; gap: 0.5rem; color: #94a3b8;"><div class="seat-sample booked" style="width: 20px; height: 20px; border-radius: 4px; background: #334155;"></div> Sold Out</div>
+                </div>
+
+                <div class="seat-grid" id="interactive-seat-grid"></div>
+
+                <div class="booking-summary-box" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h4>Seats Selected: <span id="selected-seats-list" style="color: var(--primary);">None</span></h4>
+                        <p style="color: #94a3b8; font-size: 0.85rem;" id="selected-count-label">0 tickets selected</p>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                        <div>
+                            <span style="font-size: 0.8rem; color: #94a3b8; display: block;">Total Amount</span>
+                            <div class="summary-price" id="total-price-display" style="font-size: 2rem; font-weight: 900; color: var(--primary);">₹0</div>
+                        </div>
+                        <button class="btn btn-primary" id="confirm-booking-btn" onclick="openPaymentModal()" disabled>
+                            <i class="fa-solid fa-shield-halved"></i> Proceed to Payment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💳 MULTI-PAYMENT GATEWAY MODAL -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content" style="max-width: 580px;">
+            <div class="modal-header">
+                <div>
+                    <h3>Secure Payment Gateway</h3>
+                    <p style="color: #94a3b8; font-size: 0.85rem;">256-Bit SSL Encrypted Transaction</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('paymentModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="background: rgba(236, 72, 153, 0.12); border: 1px solid var(--border-glow); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-size: 0.78rem; color: #94a3b8; display: block;">TOTAL PAYABLE AMOUNT</span>
+                        <div id="payment-total-amount" style="font-size: 1.8rem; font-weight: 900; color: var(--primary);">₹5,998</div>
+                    </div>
+                    <span style="background: rgba(16, 185, 129, 0.2); color: var(--accent-green); font-size: 0.8rem; font-weight: 800; padding: 0.4rem 0.9rem; border-radius: var(--radius-full);">
+                        <i class="fa-solid fa-lock mr-1"></i> SECURE
+                    </span>
+                </div>
+
+                <!-- Payment Method Tabs -->
+                <div class="payment-tabs">
+                    <button class="payment-tab-btn active" id="pay-tab-upi" onclick="selectPaymentTab('UPI')">
+                        <i class="fa-solid fa-qrcode text-pink-500"></i> UPI / QR Code
+                    </button>
+                    <button class="payment-tab-btn" id="pay-tab-card" onclick="selectPaymentTab('CARD')">
+                        <i class="fa-solid fa-credit-card text-cyan-400"></i> Debit / Credit Card
+                    </button>
+                    <button class="payment-tab-btn" id="pay-tab-netbanking" onclick="selectPaymentTab('NETBANKING')">
+                        <i class="fa-solid fa-building-columns text-purple-400"></i> NetBanking
+                    </button>
+                </div>
+
+                <!-- Option 1: UPI & QR CODE -->
+                <div id="pay-method-upi">
+                    <div class="qr-payment-box">
+                        <div class="qr-code-img">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=upi://pay?pa=eventify@icici&pn=EventifyIndia&cu=INR" alt="UPI QR">
+                        </div>
+                        <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem;">Scan QR to Pay via Google Pay, PhonePe, Paytm, BHIM</h4>
+                        <p style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 1.4rem;">UPI ID: <strong style="color: white;">eventify@icici</strong></p>
+                        
+                        <button class="btn btn-primary" style="width: 100%;" onclick="proceedToCheckout('UPI / QR Code')">
+                            <i class="fa-solid fa-circle-check"></i> Complete & Verify Payment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Option 2: DEBIT / CREDIT CARD -->
+                <div id="pay-method-card" style="display: none;">
+                    <form onsubmit="event.preventDefault(); proceedToCheckout('Debit/Credit Card');">
+                        <div class="form-group">
+                            <label class="form-label">Card Number</label>
+                            <input type="text" class="form-control" placeholder="4532 •••• •••• 8901" required>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label class="form-label">Expiry Date</label>
+                                <input type="text" class="form-control" placeholder="12/28" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CVV Security Code</label>
+                                <input type="password" class="form-control" placeholder="•••" maxlength="4" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cardholder Name</label>
+                            <input type="text" class="form-control" placeholder="Rahul Sharma" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                            <i class="fa-solid fa-lock"></i> Pay Now & Generate Ticket Pass
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Option 3: NETBANKING -->
+                <div id="pay-method-netbanking" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Select Bank</label>
+                        <select class="form-control">
+                            <option>HDFC Bank NetBanking</option>
+                            <option>State Bank of India (SBI)</option>
+                            <option>ICICI Bank</option>
+                            <option>Axis Bank</option>
+                            <option>Kotak Mahindra Bank</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;" onclick="proceedToCheckout('NetBanking')">
+                        <i class="fa-solid fa-arrow-right"></i> Redirect to Bank Gateway
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRMATION & TICKET PASS MODAL -->
+    <div class="modal-overlay" id="confirmationModal">
+        <div class="modal-content" style="max-width: 650px;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(16, 185, 129, 0.2); color: var(--accent-green); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <h3>Booking Confirmed!</h3>
+                        <p style="color: #94a3b8; font-size: 0.85rem;">Ticket Synchronized with Booking Service</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('confirmationModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="ticket-pass" id="printable-ticket">
+                    <div class="ticket-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 1.2rem; margin-bottom: 1.6rem;">
+                        <div>
+                            <div class="gradient-text" style="font-weight: 900; font-size: 1.3rem;">EVENTIFY PASS</div>
+                            <div style="font-size: 0.82rem; color: #94a3b8;" id="t-booking-id">BOOKING #1094</div>
+                        </div>
+                        <div class="status-badge status-confirmed">CONFIRMED</div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; margin-bottom: 1.6rem;">
+                        <div><div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">EVENT</div><div style="font-size: 1.15rem; font-weight: 800;" id="t-event-name">Sunburn Goa Fest</div></div>
+                        <div><div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">USER ID</div><div style="font-size: 1.15rem; font-weight: 800;" id="t-user-id">USR-9042</div></div>
+                        <div><div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">SEATS</div><div style="font-size: 1.15rem; font-weight: 800; color: var(--primary);" id="t-seats">A3, A4</div></div>
+                        <div><div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">DATE</div><div style="font-size: 1.15rem; font-weight: 800;" id="t-date">2026-12-28</div></div>
+                    </div>
+
+                    <div style="text-align: center; padding-top: 1.2rem; border-top: 1px dashed rgba(255,255,255,0.18);">
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.5rem;">SCAN AT EVENT ENTRANCE</div>
+                        <div style="font-family: monospace; font-size: 2rem; letter-spacing: 6px; color: #94a3b8;" id="t-barcode">*EV-9042-1094*</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="btn btn-primary" style="flex: 1;" onclick="window.print()">
+                        <i class="fa-solid fa-download"></i> Save / Download Ticket PDF
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeModal('confirmationModal'); switchTab('bookings');">
+                        View in My Bookings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATIONS MODAL -->
+    <div class="modal-overlay" id="notifModal">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3>Notifications</h3>
+                <button class="modal-close-btn" onclick="closeModal('notifModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="notifications-list-container"></div>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 id="auth-modal-title">Sign In to Eventify</h3>
+                <button class="modal-close-btn" onclick="closeModal('authModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+                    <input type="hidden" id="auth-type-hidden" value="login">
+                    
+                    <div class="form-group" id="auth-name-group" style="display: none;">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="auth-name-input" class="form-control" placeholder="Rahul Sharma">
+                    </div>
+
+                    <div class="form-group" id="auth-phone-group" style="display: none;">
+                        <label class="form-label">Phone Number (India)</label>
+                        <input type="tel" id="auth-phone-input" class="form-control" placeholder="+91 98765 43210">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="auth-email-input" class="form-control" placeholder="rahul@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label">Password</label>
+                            <a href="javascript:void(0)" onclick="handleForgotPassword()" style="font-size: 0.8rem; color: var(--primary); font-weight: 700;">Forgot Password?</a>
+                        </div>
+                        <input type="password" id="auth-password-input" class="form-control" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" id="auth-submit-btn">
+                        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                    </button>
+                </form>
+
+                <div style="text-align: center; margin-top: 1.5rem; color: #94a3b8; font-size: 0.88rem;">
+                    <span id="auth-toggle-text">Don't have an account?</span> 
+                    <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color: var(--primary); font-weight: 800;" id="auth-toggle-link">Register Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER PROFILE & SETTINGS MODAL (AVATAR & DEVICE PHOTO UPLOAD) -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-content" style="max-width: 620px;">
+            <div class="modal-header">
+                <h3>User Profile & Settings</h3>
+                <button class="modal-close-btn" onclick="closeModal('profileModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="profile-edit-form" onsubmit="handleSaveProfile(event)">
+                    <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.8rem; flex-wrap: wrap;">
+                        <div style="position: relative;">
+                            <img id="profile-avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" style="width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); box-shadow: var(--shadow-pink);">
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.3rem; font-weight: 900;" id="profile-heading-name">Rahul Sharma</h4>
+                            <span style="font-size: 0.8rem; color: var(--accent-gold); font-weight: 800;">🇮🇳 VIP GOLD MEMBER</span>
+                            <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.2rem;">Active Bookings: <strong id="profile-active-count" style="color: var(--primary);">1</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- PROFILE PICTURE CHOICE & DEVICE GALLERY UPLOAD -->
+                    <div style="margin-bottom: 1.6rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.2rem;">
+                        <label class="form-label" style="font-size: 0.85rem; color: var(--accent-cyan);">Profile Picture Options:</label>
+                        
+                        <!-- Hidden Device File Input -->
+                        <input type="file" id="profile-file-input" accept="image/*" onchange="handleProfileFileUpload(event)" style="display: none;">
+
+                        <div style="display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; margin-bottom: 0.8rem;">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('profile-file-input').click()">
+                                <i class="fa-solid fa-upload"></i> Upload Photo from Device / Gallery
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="setCustomAvatarUrl()" style="font-size: 0.78rem;">
+                                <i class="fa-solid fa-link"></i> Custom Web URL
+                            </button>
+                        </div>
+
+                        <div style="font-size: 0.78rem; color: #94a3b8; margin-bottom: 0.4rem;">Or choose a preset avatar:</div>
+                        <div style="display: flex; gap: 0.8rem; align-items: center; overflow-x: auto; padding-bottom: 0.4rem;">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid var(--primary);" onclick="changeProfileAvatar(this.src)" title="Avatar 1">
+                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid var(--accent-cyan);" onclick="changeProfileAvatar(this.src)" title="Avatar 2">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid var(--secondary);" onclick="changeProfileAvatar(this.src)" title="Avatar 3">
+                            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid var(--accent-gold);" onclick="changeProfileAvatar(this.src)" title="Avatar 4">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="profile-name-input" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number (India)</label>
+                            <input type="tel" id="profile-phone-input" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="profile-email-input" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Personal Bio</label>
+                        <textarea id="profile-bio-input" class="form-control" rows="3" placeholder="Tell us about yourself..."></textarea>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 1rem;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="openPasswordModal()">
+                            <i class="fa-solid fa-key"></i> Change Password
+                        </button>
+                        
+                        <div style="display: flex; gap: 0.6rem;">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Profile
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="closeModal('profileModal'); handleLogout();">
+                                Sign Out
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHANGE PASSWORD MODAL -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-content" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>Change Security Password</h3>
+                <button class="modal-close-btn" onclick="closeModal('passwordModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="handleChangePassword(event)">
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" id="old-pass-input" class="form-control" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="new-pass-input" class="form-control" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" id="confirm-pass-input" class="form-control" placeholder="••••••••" required>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                        <a href="javascript:void(0)" onclick="handleForgotPassword()" style="font-size: 0.85rem; color: var(--primary); font-weight: 700;">Forgot Password?</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-shield-halved"></i> Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- CREATE / EDIT EVENT MODAL -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="admin-modal-title">Create New Event</h3>
+                <button class="modal-close-btn" onclick="closeModal('adminModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="event-form" onsubmit="handleSaveEvent(event)">
+                    <input type="hidden" id="event-id-hidden">
+                    <div class="form-group">
+                        <label class="form-label">Event Name</label>
+                        <input type="text" id="event-name-input" class="form-control" placeholder="e.g. Cyberpunk Rave 2026" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select id="event-category-input" class="form-control">
+                                <option value="Music">Music</option>
+                                <option value="Tech">Tech</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Arts">Arts</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location (City, India)</label>
+                            <input type="text" id="event-location-input" class="form-control" placeholder="e.g. Arena Dome, Mumbai" required>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Event Date</label>
+                            <input type="date" id="event-date-input" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Total Seats</label>
+                            <input type="number" id="event-seats-input" class="form-control" value="100" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Price (₹)</label>
+                            <input type="number" id="event-price-input" class="form-control" value="1499" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Image Banner URL</label>
+                        <input type="url" id="event-image-input" class="form-control" placeholder="https://images.unsplash.com/...">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Event to Microservice
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- API GATEWAY CONFIG MODAL -->
+    <div class="modal-overlay" id="gatewayModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div>
+                    <h3>Microservice & Auth Gateway Settings</h3>
+                    <p style="color: #94a3b8; font-size: 0.85rem;">Configure Spring Boot Eureka / Gateway REST API Integration</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('gatewayModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Data Provider Mode</label>
+                    <select id="config-mode-select" class="form-control" onchange="toggleApiModeSelect()">
+                        <option value="MOCK">Mock Interactive Mode (Standalone, Client-Side)</option>
+                        <option value="REAL">Live Microservice API (Spring Gateway / Eureka)</option>
+                    </select>
+                </div>
+
+                <div id="real-api-settings" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">API Gateway Base URL</label>
+                        <input type="text" id="config-gateway-url" class="form-control" value="http://localhost:8080">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">JWT Token (Bearer Authentication)</label>
+                        <textarea id="config-jwt-token" class="form-control" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></textarea>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;" onclick="saveGatewayConfig()">
+                    <i class="fa-solid fa-check"></i> Apply Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+    <script src="app.js"></script>
+</body>
+</html>
