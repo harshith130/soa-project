@@ -28,23 +28,23 @@ services:
           type: web
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
-      - key: DB_HOST
+      - key: DATABASE_HOST
         fromDatabase:
           name: stagefront-db
           property: host
-      - key: DB_PORT
+      - key: DATABASE_PORT
         fromDatabase:
           name: stagefront-db
           property: port
-      - key: DB_NAME
+      - key: DATABASE_NAME
         fromDatabase:
           name: stagefront-db
           property: database
-      - key: DB_USER
+      - key: DATABASE_USERNAME
         fromDatabase:
           name: stagefront-db
           property: user
-      - key: DB_PASSWORD
+      - key: DATABASE_PASSWORD
         fromDatabase:
           name: stagefront-db
           property: password
@@ -87,23 +87,23 @@ services:
           type: web
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
-      - key: DB_HOST
+      - key: DATABASE_HOST
         fromDatabase:
           name: stagefront-db
           property: host
-      - key: DB_PORT
+      - key: DATABASE_PORT
         fromDatabase:
           name: stagefront-db
           property: port
-      - key: DB_NAME
+      - key: DATABASE_NAME
         fromDatabase:
           name: stagefront-db
           property: database
-      - key: DB_USER
+      - key: DATABASE_USERNAME
         fromDatabase:
           name: stagefront-db
           property: user
-      - key: DB_PASSWORD
+      - key: DATABASE_PASSWORD
         fromDatabase:
           name: stagefront-db
           property: password
@@ -124,23 +124,23 @@ services:
           type: web
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
-      - key: DB_HOST
+      - key: DATABASE_HOST
         fromDatabase:
           name: stagefront-db
           property: host
-      - key: DB_PORT
+      - key: DATABASE_PORT
         fromDatabase:
           name: stagefront-db
           property: port
-      - key: DB_NAME
+      - key: DATABASE_NAME
         fromDatabase:
           name: stagefront-db
           property: database
-      - key: DB_USER
+      - key: DATABASE_USERNAME
         fromDatabase:
           name: stagefront-db
           property: user
-      - key: DB_PASSWORD
+      - key: DATABASE_PASSWORD
         fromDatabase:
           name: stagefront-db
           property: password
