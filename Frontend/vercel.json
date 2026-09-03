@@ -1,0 +1,50 @@
+{
+  "projectName": "StageFront",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "publicSource": "./",
+  "framework": "vite",
+  "nodeVersion": "20.x",
+  "env": [
+    {
+      "key": "VITE_API_BASE_URL",
+      "description": "Backend API Gateway URL for production",
+      "example": "https://api-gateway.onrender.com",
+      "type": "string"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}
