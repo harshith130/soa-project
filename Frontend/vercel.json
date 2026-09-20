@@ -1,5 +1,4 @@
 {
-  "projectName": "StageFront",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "publicSource": "./",
