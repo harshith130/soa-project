@@ -30,7 +30,7 @@ public class AuthConfig {
 	}
 
 	@Bean
-	RestClient userServiceClient(@Qualifier("loadBalancedRestClientBuilder") RestClient.Builder builder,
+	RestClient userServiceClient(RestClient.Builder builder,
 			@org.springframework.beans.factory.annotation.Value("${user-service.url}") String userServiceUrl) {
 		return builder.baseUrl(userServiceUrl).build();
 	}
