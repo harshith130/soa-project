@@ -32,6 +32,8 @@ services:
         value: stagefront-user-service.onrender.com
       - key: RENDER_EXTERNAL_URL
         value: https://stagefront-user-service.onrender.com
+      - key: EUREKA_PORT
+        value: "443"
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -77,6 +79,8 @@ services:
         value: stagefront-auth-service.onrender.com
       - key: RENDER_EXTERNAL_URL
         value: https://stagefront-auth-service.onrender.com
+      - key: EUREKA_PORT
+        value: "443"
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -107,6 +111,8 @@ services:
         value: stagefront-event-service.onrender.com
       - key: RENDER_EXTERNAL_URL
         value: https://stagefront-event-service.onrender.com
+      - key: EUREKA_PORT
+        value: "443"
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -152,6 +158,8 @@ services:
         value: stagefront-booking-service.onrender.com
       - key: RENDER_EXTERNAL_URL
         value: https://stagefront-booking-service.onrender.com
+      - key: EUREKA_PORT
+        value: "443"
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -197,6 +205,8 @@ services:
         value: stagefront-api-gateway.onrender.com
       - key: RENDER_EXTERNAL_URL
         value: https://stagefront-api-gateway.onrender.com
+      - key: EUREKA_PORT
+        value: "443"
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
