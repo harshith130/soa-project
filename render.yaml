@@ -212,7 +212,7 @@ services:
       - key: EUREKA_NON_SECURE_PORT_ENABLED
         value: "false"
       - key: CORS_ALLOWED_ORIGINS
-        value: https://PLACEHOLDER_VERCEL_DOMAIN
+        value: https://stagefront-frontend-2026.vercel.app,https://*.vercel.app
 
 databases:
 
