@@ -29,15 +29,9 @@ services:
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
       - key: RENDER_EXTERNAL_HOSTNAME
-        fromService:
-          type: web
-          name: stagefront-user-service
-          envVarKey: RENDER_EXTERNAL_HOSTNAME
+        value: stagefront-user-service.onrender.com
       - key: RENDER_EXTERNAL_URL
-        fromService:
-          type: web
-          name: stagefront-user-service
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://stagefront-user-service.onrender.com
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -80,15 +74,9 @@ services:
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
       - key: RENDER_EXTERNAL_HOSTNAME
-        fromService:
-          type: web
-          name: stagefront-auth-service
-          envVarKey: RENDER_EXTERNAL_HOSTNAME
+        value: stagefront-auth-service.onrender.com
       - key: RENDER_EXTERNAL_URL
-        fromService:
-          type: web
-          name: stagefront-auth-service
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://stagefront-auth-service.onrender.com
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -116,15 +104,9 @@ services:
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
       - key: RENDER_EXTERNAL_HOSTNAME
-        fromService:
-          type: web
-          name: stagefront-event-service
-          envVarKey: RENDER_EXTERNAL_HOSTNAME
+        value: stagefront-event-service.onrender.com
       - key: RENDER_EXTERNAL_URL
-        fromService:
-          type: web
-          name: stagefront-event-service
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://stagefront-event-service.onrender.com
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -167,15 +149,9 @@ services:
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
       - key: RENDER_EXTERNAL_HOSTNAME
-        fromService:
-          type: web
-          name: stagefront-booking-service
-          envVarKey: RENDER_EXTERNAL_HOSTNAME
+        value: stagefront-booking-service.onrender.com
       - key: RENDER_EXTERNAL_URL
-        fromService:
-          type: web
-          name: stagefront-booking-service
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://stagefront-booking-service.onrender.com
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -218,15 +194,9 @@ services:
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
       - key: RENDER_EXTERNAL_HOSTNAME
-        fromService:
-          type: web
-          name: stagefront-api-gateway
-          envVarKey: RENDER_EXTERNAL_HOSTNAME
+        value: stagefront-api-gateway.onrender.com
       - key: RENDER_EXTERNAL_URL
-        fromService:
-          type: web
-          name: stagefront-api-gateway
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://stagefront-api-gateway.onrender.com
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
