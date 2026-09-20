@@ -28,6 +28,16 @@ services:
           type: web
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
+      - key: RENDER_EXTERNAL_HOSTNAME
+        fromService:
+          type: web
+          name: stagefront-user-service
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: RENDER_EXTERNAL_URL
+        fromService:
+          type: web
+          name: stagefront-user-service
+          envVarKey: RENDER_EXTERNAL_URL
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -69,6 +79,16 @@ services:
           type: web
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
+      - key: RENDER_EXTERNAL_HOSTNAME
+        fromService:
+          type: web
+          name: stagefront-auth-service
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: RENDER_EXTERNAL_URL
+        fromService:
+          type: web
+          name: stagefront-auth-service
+          envVarKey: RENDER_EXTERNAL_URL
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -94,6 +114,16 @@ services:
         fromService:
           type: web
           name: stagefront-eureka
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: RENDER_EXTERNAL_HOSTNAME
+        fromService:
+          type: web
+          name: stagefront-event-service
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: RENDER_EXTERNAL_URL
+        fromService:
+          type: web
+          name: stagefront-event-service
           envVarKey: RENDER_EXTERNAL_URL
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
@@ -136,6 +166,16 @@ services:
           type: web
           name: stagefront-eureka
           envVarKey: RENDER_EXTERNAL_URL
+      - key: RENDER_EXTERNAL_HOSTNAME
+        fromService:
+          type: web
+          name: stagefront-booking-service
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: RENDER_EXTERNAL_URL
+        fromService:
+          type: web
+          name: stagefront-booking-service
+          envVarKey: RENDER_EXTERNAL_URL
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
       - key: EUREKA_NON_SECURE_PORT_ENABLED
@@ -176,6 +216,16 @@ services:
         fromService:
           type: web
           name: stagefront-eureka
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: RENDER_EXTERNAL_HOSTNAME
+        fromService:
+          type: web
+          name: stagefront-api-gateway
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: RENDER_EXTERNAL_URL
+        fromService:
+          type: web
+          name: stagefront-api-gateway
           envVarKey: RENDER_EXTERNAL_URL
       - key: EUREKA_SECURE_PORT_ENABLED
         value: "true"
